@@ -1,51 +1,19 @@
 #!/usr/bin/env bash
 
-import math
-import random
-
-def prime_factorize(n):
-    factors = []
-    if n <= 3:
-        factors.append(n)
-        return factors
-    x = random.randint(2, n - 1)
-    y = x
-    c = random.randint(1, n - 1)
-    d = 1
-    counter = 0
-    while d == 1 and counter < 1000:
-        x = (x * x + c) % n
-        y = (y * y + c) % n
-        y = (y * y + c) % n
-        d = math.gcd(abs(y - x), n)
-        if y == x:
-            d = n
-        if y == x + c:
-            c = random.randint(1, n - 1)
-        counter += 1
-    if d != n:
-        factors.extend(prime_factorize(d))
-        factors.extend(prime_factorize(n // d))
-    else:
-        factors.append(n)
-    return factors
-
-if [ $# -ne 1 ]
-then
-        echo 'Usage: factors <file>'
-        exit 1
-else
-        while read i
+check_factor()
+{
+        factors=("$@")
+        num=$(echo "${factors[0]}" | tr ':' '=')
+        num1=1
+        num2=1
+        for i in "${factors[@]:1}"
         do
-                factors = prime_factorize(i)
-                if len(factors) == 1:
-                        echo "$i=$factors[0]"
-                elif len(factors) == 2:
-                        echo "$i=$factors[0]*$factors[1]"
-                else:
-                        product = 1
-                        for factor in factors:
-                                product = factor * product
-                        echo "$i=$product"
-        done < "$1"
-fi
+                if ((i > num1)); then
+                        num2=$num1
+                        num1=$i
+                elif ((i > num2)); then
+                        num2=$i
+                fi
+        done
+        product=$(echo "$num1*$num2" | bc)
+        for i in "${factors
