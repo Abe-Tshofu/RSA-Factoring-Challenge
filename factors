@@ -2,18 +2,43 @@
 
 check_factor()
 {
-        factors=("$@")
-        num=$(echo "${factors[0]}" | tr ':' '=')
-        num1=1
-        num2=1
-        for i in "${factors[@]:1}"
-        do
-                if ((i > num1)); then
-                        num2=$num1
-                        num1=$i
-                elif ((i > num2)); then
-                        num2=$i
+	if [ $# -ne 3 ];
+        then
+                args=("$@")
+                count=0
+                num2=1
+                for a in ${args[*]};
+                do
+                        if [ $count -gt 1 ];
+                        then
+                                num2=$(echo $a*$num2 | bc)
+                        fi
+                        count=$((count + 1))
+                done
+        else
+                num2=$3
+        fi
+
+        num1=$2
+        num=$(echo "$1" | tr ':' '=')
+
+        result=$(echo "if($num2 > $num1) 1 else 0" | bc)
+	        if ((result == 1)); then
+		        numcp=$num1
+		        num1=$num2
+		        num2=$numcp
                 fi
-        done
-        product=$(echo "$num1*$num2" | bc)
-        for i in "${factors
+
+        echo "$num$num1*$num2"
+}
+
+if [ $# -ne 1 ]
+then
+        echo 'Usage: factors <file>'
+        exit 1
+else
+
+        while read i
+        do
+                factor "$i" 2> /dev/null
+                if [ $? -ne
