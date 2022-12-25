@@ -40,5 +40,9 @@ else
 
         while read i
         do
-                factor "$i" 2> /dev/null
-                if [ $? -ne
+
+                result=$(factor "$i")
+                check_factor $result
+
+        done < "$1"
+fi
